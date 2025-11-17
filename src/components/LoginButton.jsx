@@ -1,6 +1,6 @@
 export default function LoginButton() {
   const CLIENT_ID = "cf12d9a2f6ac4dc59d21774ce4fdb3cb";
-const REDIRECT_URI = "http://127.0.0.1:3000/callback";
+const REDIRECT_URI = "https://howperformativeami.com/callback";
   const SCOPES = [
     "user-top-read",
     "user-read-recently-played"

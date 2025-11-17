@@ -15,7 +15,7 @@ export default function Callback() {
       const body = new URLSearchParams({
         grant_type: "authorization_code",
         code: code,
-        redirect_uri: "http://127.0.0.1:3000/callback"
+        redirect_uri: "https://howperformativeami.com/callback"
       });
 
       try {

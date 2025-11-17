@@ -1,6 +1,6 @@
 export default function LoginButton() {
   const CLIENT_ID = "cf12d9a2f6ac4dc59d21774ce4fdb3cb";
-const REDIRECT_URI = "https://howperformativeami.com/callback";
+const REDIRECT_URI = "https://howperformativeami-pa0kglrvu-sakshyam-pandeys-projects.vercel.app/callback";
   const SCOPES = [
     "user-top-read",
     "user-read-recently-played"

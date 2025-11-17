@@ -15,7 +15,7 @@ export default function Callback() {
       const body = new URLSearchParams({
         grant_type: "authorization_code",
         code: code,
-        redirect_uri: "https://howperformativeami-pa0kglrvu-sakshyam-pandeys-projects.vercel.app/callback"
+        redirect_uri: "https://howperformativeami.com/callback"
       });
 
       try {

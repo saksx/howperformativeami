@@ -1,6 +1,6 @@
 export default function LoginButton() {
   const CLIENT_ID = "cf12d9a2f6ac4dc59d21774ce4fdb3cb";
-const REDIRECT_URI = "https://howperformativeami.com/callback";
+const REDIRECT_URI = "https://www.howperformativeami.com/callback";
   const SCOPES = [
     "user-top-read",
     "user-read-recently-played"
@@ -20,7 +20,7 @@ const REDIRECT_URI = "https://howperformativeami.com/callback";
   return (
     
     <div style={{ textAlign: "center", marginTop: "100px" }}>
-  
+  <p>how performative are you based on your music taste?</p><br />
   <button
     onClick={login}
     style={{
@@ -38,6 +38,7 @@ const REDIRECT_URI = "https://howperformativeami.com/callback";
   >
     Log in with Spotify
   </button>
+    <br /><p>made by socks :)</p>
 </div>
   );
 }

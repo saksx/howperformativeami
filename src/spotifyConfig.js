@@ -24,7 +24,7 @@ export function getSpotifyRedirectUri() {
     return "http://127.0.0.1:3000/callback";
   }
 
-  return "https://howperformativeami.com/callback";
+  return `${window.location.origin}/callback`;
 }
 
 function generateRandomString(length) {

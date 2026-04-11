@@ -1,46 +1,96 @@
-import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { clearSpotifySession, exchangeSpotifyCode } from "../spotifyConfig";
+
+const LOADING_MESSAGES = [
+  "Scanning your guilty pleasures...",
+  "Checking if your indie picks are mainstream now...",
+  "Counting how many prestige tracks got skipped...",
+  "Auditing your public-listening persona...",
+];
+
+let activeExchangeCode = null;
+let activeExchangePromise = null;
 
 export default function Callback() {
   const navigate = useNavigate();
+  const [messageIndex, setMessageIndex] = useState(0);
+  const [callbackError, setCallbackError] = useState("");
+
+  useEffect(() => {
+    const messageInterval = setInterval(() => {
+      setMessageIndex((current) => (current + 1) % LOADING_MESSAGES.length);
+    }, 1800);
+
+    return () => clearInterval(messageInterval);
+  }, []);
 
   useEffect(() => {
     async function getToken() {
       const code = new URLSearchParams(window.location.search).get("code");
+      const state = new URLSearchParams(window.location.search).get("state");
 
-      const clientId = "cf12d9a2f6ac4dc59d21774ce4fdb3cb";
-      const clientSecret = "81754d4124f74556904447840ee729f9";
-
-      const body = new URLSearchParams({
-        grant_type: "authorization_code",
-        code: code,
-        redirect_uri: "https://www.howperformativeami.com/callback"
-      });
+      if (!code) {
+        navigate("/");
+        return;
+      }
 
       try {
-        const response = await axios.post(
-          "https://accounts.spotify.com/api/token",
-          body,
-          {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-              "Authorization": "Basic " + btoa(clientId + ":" + clientSecret)
-            }
-          }
-        );
+        if (!activeExchangePromise || activeExchangeCode !== code) {
+          activeExchangeCode = code;
+          activeExchangePromise = exchangeSpotifyCode(code, state).finally(() => {
+            activeExchangeCode = null;
+            activeExchangePromise = null;
+          });
+        }
 
-        localStorage.setItem("access_token", response.data.access_token);
+        await activeExchangePromise;
         navigate("/dashboard");
-
       } catch (err) {
-        console.log("ERROR DATA:", err.response?.data);
+        clearSpotifySession();
+        console.log("ERROR DATA:", err.response?.data || err.message);
         console.log("ERROR STATUS:", err.response?.status);
+        setCallbackError(
+          err.response?.data?.error_description ||
+            err.response?.data?.error ||
+            err.message ||
+            "Spotify login failed."
+        );
       }
     }
 
     getToken();
   }, [navigate]);
 
-  return <div>Loading...</div>;
+  return (
+    <section className="screen screen--loading">
+      <div className="noise-overlay" />
+      <div className="loading-layout">
+        <div className="loading-ring">
+          <div className="loading-ring__inner">
+            <span>SYNC</span>
+          </div>
+        </div>
+
+        <div className="loading-copy">
+          <p className="loading-kicker">Analyzing your listening history</p>
+          <h1>
+            {callbackError ? "Spotify login could not be completed." : LOADING_MESSAGES[messageIndex]}
+          </h1>
+          {callbackError ? (
+            <div className="auth-error-card">
+              <p>{callbackError}</p>
+              <button className="results-action results-action--secondary" onClick={() => navigate("/")}>
+                Back Home
+              </button>
+            </div>
+          ) : (
+            <div className="loading-bar">
+              <div className="loading-bar__fill" />
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
 }
